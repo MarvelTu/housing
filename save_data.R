@@ -3,7 +3,7 @@
 url <- "https://github.com/b-rodrigues/rap4all/raw/master/datasets/vente-maison-2010-2021.xlsx"
 
 # Shortened url
-#url <- "https://is.gd/1vvBAc"
+# url <- "https://is.gd/1vvBAc"
 
 raw_data <- tempfile(fileext = ".xlsx")
 
@@ -11,16 +11,17 @@ download.file(url, raw_data, method = "auto", mode = "wb")
 
 sheets <- excel_sheets(raw_data)
 
-read_clean <- function(..., sheet){
+read_clean <- function(..., sheet) {
   read_excel(..., sheet = sheet) |>
     mutate(year = sheet)
 }
 
 raw_data <- map(
   sheets,
-  ~read_clean(raw_data,
-              skip = 10,
-              sheet = .)
+  ~ read_clean(raw_data,
+    skip = 10,
+    sheet = .
+  )
 ) |>
   bind_rows() |>
   clean_names()
@@ -53,12 +54,15 @@ raw_data |>
 # Deal with spelling
 
 raw_data <- raw_data |>
-  mutate(locality = ifelse(grepl("Luxembourg-Ville", locality),
-                           "Luxembourg",
-                           locality),
-         locality = ifelse(grepl("P.tange", locality),
-                           "Pétange",
-                           locality)
+  mutate(
+    locality = ifelse(grepl("Luxembourg-Ville", locality),
+      "Luxembourg",
+      locality
+    ),
+    locality = ifelse(grepl("P.tange", locality),
+      "Pétange",
+      locality
+    )
   ) |>
   mutate(across(starts_with("average"), as.numeric))
 
@@ -71,10 +75,12 @@ raw_data |>
 raw_data <- raw_data |>
   filter(!grepl("Source", locality))
 
-#Keep commune level data
+# Keep commune level data
 commune_level_data <- raw_data |>
-  filter(!grepl("nationale|offres", locality),
-         !is.na(locality))
+  filter(
+    !grepl("nationale|offres", locality),
+    !is.na(locality)
+  )
 
 # Keep country level data
 country_level <- raw_data |>
@@ -101,7 +107,7 @@ current_communes <- "https://en.wikipedia.org/wiki/List_of_communes_of_Luxembour
 setdiff(unique(commune_level_data$locality), current_communes$commune)
 
 # We need former communes
-former_communes <- "https://en.wikipedia.org/wiki/Communes_of_Luxembourg#Former_communes" |>  
+former_communes <- "https://en.wikipedia.org/wiki/Communes_of_Luxembourg#Former_communes" |>
   rvest::read_html() |>
   rvest::html_table() |>
   purrr::pluck(3) |>
