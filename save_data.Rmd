@@ -1,0 +1,18 @@
+---
+title: "Nominal house prices data in Luxembourg - Data cleaning"
+author: "Put your name in here"
+date: "`r Sys.Date()`"
+---
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(janitor)
+library(purrr)
+library(readxl)
+library(rvest)
+library(stringr)
+```
+
+
+## Downloading the data
